@@ -25,15 +25,21 @@ const upgrades = {
 
 // funções
 
+function updateUpgrade() {
+Object.entries(upgrades).forEach(([key, up]) => {
+    const el = document.querySelector(`.upgrade[data-name="${key}"]`);
+    el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}` 
+});
+}
+
 function showUpgrade() {
     // percorre todos os upgrades definidos e atualiza o display
     Object.entries(upgrades).forEach(([key, up]) => {
         const el = document.querySelector(`.upgrade[data-name="${key}"]`);
         if (!el) return;
-        if (gameState.gold >= up.unlockedAt) {
+        if (gameState.gold >= up.unlockedAt && upgrades[key].showed === false) {
             el.style.display = 'inline-block';
-        } else {
-            el.style.display = 'none';
+            upgrades[key].showed = true;
         }
     });
 }
@@ -60,13 +66,21 @@ function getGold() {
     gameState.gold += 1;
 }
 
+
+// config de visualização de herois
+
+function showHeroes() {
+    document.getElementById('swordsman-count').innerText = gameState.swordsman;
+    document.getElementById('archer-count').innerText = gameState.archer;
+}
+
 // função para dar refresh na ui do jogo
 
 function refreshUI() {
     showUpgrade()
+    updateUpgrade()
     showHeroes()
-    // calculo de gold per sec
-    //gold refresh
+    //calculo de gold per sec
     gameState.gold += gameState.goldPerSecond * 0.1; // 0.1s tick
     document.getElementById('gold').innerText = gameState.gold.toFixed(1);
     document.getElementById('gold-per-second').innerText = gameState.goldPerSecond;   
@@ -75,9 +89,3 @@ function refreshUI() {
 
 refreshUI();
 
-// config de visualização de herois
-
-function showHeroes() {
-    document.getElementById('swordsman-count').innerText = gameState.swordsman;
-    document.getElementById('archer-count').innerText = gameState.archer;
-}
