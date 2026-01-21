@@ -1,0 +1,58 @@
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-size: 22px;
+    display: flex;  
+    justify-content: space-between;
+    margin: 15px;
+    margin-right: 50px;
+}
+
+p { 
+    display: inline;
+    margin: 3px;
+}   
+
+button {
+    display: block;
+    margin: 8px;
+    border-radius: 2px;
+    width: 100%;
+    height: fit-content;
+    font-size: 20px;
+    padding: 10px;
+    font-weight: 1;
+}
+
+.upgrade {
+    display:none;
+}
+
+#heroes-list {
+    display: flex;
+    flex-direction: column ;
+}
+
+
+h2 {
+    margin-top: 0px;
+}
+
+
+#left {
+    display: flex;
+    justify-content: space-between;
+}
+
+#stats {
+    display: flex;
+    flex-direction: row;
+}
+
+#buttons-section {
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+    padding-left: 20px;
+    border-left: 1px solid gray;
+}

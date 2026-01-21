@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hero's city</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+
+</head>
+
+<body>
+    <section id="left">
+        <div id="left-left">
+            <div id="stats">
+                <p>Gold:<p id="gold">0</p></p>
+                <p>GPS:<p id="gold-per-second">0</p></p>
+            </div>
+            <button id="slay-button" onclick="getGold()">slay monsters</button>
+        </div>
+        <section id="buttons-section">
+            <button id="button-hire-swordsman" class="upgrade" data-name="swordsman" onclick=buyUpgrade(this)>hire aswordsman - 10 gold</button>
+            <button id="button-hire-archer" class="upgrade" data-name="archer" onclick=buyUpgrade(this)>hire an archer - 50 gold</button>
+        </section>
+    </section>
+    <section id="right">
+        <h2>Your Heroes</h2>
+        <div id="heroes-list">
+            <!-- Heroes will be displayed here -->
+            <div>
+                <p>Swordsman:
+                <p id="swordsman-count">Swordsman: 0</p>
+                </p>
+            </div>
+            <div>
+                <p>Archer:
+                <p id="archer-count">Archer: 0</p>
+                </p>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
