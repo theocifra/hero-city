@@ -25,15 +25,8 @@ const upgrades = {
 
 // funções
 
-function updateUpgrade() {
-Object.entries(upgrades).forEach(([key, up]) => {
-    const el = document.querySelector(`.upgrade[data-name="${key}"]`);
-    el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}` 
-});
-}
-
 function showUpgrade() {
-    // percorre todos os upgrades definidos e atualiza o display
+    // percorre todos os upgrades definidos e atualiza o display, codigo so para aparecer o upgrade quando o jogador tiver gold
     Object.entries(upgrades).forEach(([key, up]) => {
         const el = document.querySelector(`.upgrade[data-name="${key}"]`);
         if (!el) return;
@@ -41,6 +34,8 @@ function showUpgrade() {
             el.style.display = 'inline-block';
             upgrades[key].showed = true;
         }
+        // update o preço do upgrade
+        el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}` 
     });
 }
 
@@ -57,9 +52,25 @@ function buyUpgrade(element) {
         gameState.gold -= upgradeCost;
         gameState[upgradeName] += 1;
         console.log(`Comprou 1 ${upgradeName}`);
-        gameState.goldPerSecond = ((gameState.swordsman * upgrades.swordsman.goldPerSecond) + (gameState.archer * upgrades.archer.goldPerSecond))
+        calculateGoldPerSecond()
     }
 }
+
+function calculateGoldPerSecond() {
+    let total = 0;
+    Object.keys(upgrades).forEach(key => {
+        total += gameState[key] * upgrades[key].goldPerSecond;
+    });
+    gameState.goldPerSecond = total;
+}
+
+
+// configs do slay button
+
+slayButton = document.getElementById("slay-button");
+slayButton.addEventListener("click", getGold);
+
+// tooltips de producao
 
 
 function getGold() {
@@ -78,7 +89,6 @@ function showHeroes() {
 
 function refreshUI() {
     showUpgrade()
-    updateUpgrade()
     showHeroes()
     //calculo de gold per sec
     gameState.gold += gameState.goldPerSecond * 0.1; // 0.1s tick
