@@ -1,99 +1,143 @@
-// constantes
+// ================= CONSTANTES =================
 
 const gameState = {
     gold: 0,
     goldPerSecond: 0,
-    swordsman: 0,
-    archer: 0,
-    axeman: 0
+    goldPerClick: 1,
+    units: {
+        swordsman: 0,
+        archer: 0,
+        axeman: 0
+    }
 }
 
-const warriors = {
+const heroes = {
     swordsman: { 
         baseCost: 10, 
         goldPerSecond: 1, 
         unlockedAt: 5, 
         showed: false,
-        costMultiplier: 1.15
+        costMultiplier: 1.20
     },
     archer: { 
-        baseCost: 50, 
+        baseCost: 150, 
         goldPerSecond: 3, 
         unlockedAt: 20, 
         showed: false,
         costMultiplier: 1.20
     },
     axeman: { 
-        baseCost: 200, 
+        baseCost: 500, 
         goldPerSecond: 10, 
         unlockedAt: 100, 
         showed: false,
-        costMultiplier: 1.25
+        costMultiplier: 1.20
     }
 }
 
-// funções
+const equipments = {
+    woodSword: {
+        name: "wood sword",
+        description: "a simple wood ",
+        effect:"multiply swordsman gains by 2x",
+        price: 60,
+        affect: "swordsman",
+        multiplier: 2,
+        showed: false
+    }, 
+    martialArts: {
+        name: "Martial Arts",
+        description: "learn the kung fu!",
+        effect: "Multiply click efficiency by 2x",
+        price: 30,
+        affect: "click",
+        multiplier: 2,
+        showed: false
+    }
+}
+
+// ================= UPGRADES =================
 
 function showUpgrade() {
-    // percorre todos os upgrades definidos e atualiza o display, codigo so para aparecer o upgrade quando o jogador tiver gold
-    Object.entries(warriors).forEach(([key, up]) => {
+    Object.entries(heroes).forEach(([key, up]) => {
         const el = document.querySelector(`.upgrade[data-name="${key}"]`);
         if (!el) return;
-        if (gameState.gold >= up.unlockedAt && warriors[key].showed === false) {
+
+        if (gameState.gold >= up.unlockedAt && !up.showed) {
             el.style.display = 'inline-block';
-            warriors[key].showed = true;
+            up.showed = true;
         }
-        // update o preço do upgrade
-        el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}` 
-        el.setAttribute("title", `give ${warriors[key].goldPerSecond} gold/sec - total: ${warriors[key].goldPerSecond * gameState[key]} gold/sec`)
+
+        el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}`;
+        el.setAttribute(
+            "title",
+            `give ${up.goldPerSecond} gold/sec - total: ${up.goldPerSecond * gameState.units[key]} gold/sec`
+        );
     });
 }
 
 function getUpgradeCost(upgradeName) {
-    const upgrade = warriors[upgradeName];
-    const owned = gameState[upgradeName];
+    const upgrade = heroes[upgradeName];
+    const owned = gameState.units[upgradeName];
     return Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, owned));
 }
 
 function buyUpgrade(element) {
-    upgradeName = element.dataset.name;
-    upgradeCost = getUpgradeCost(upgradeName);
-    if (gameState.gold >= upgradeCost) {
-        gameState.gold -= upgradeCost;
-        gameState[upgradeName] += 1;
+    const upgradeName = element.dataset.name;
+    const cost = getUpgradeCost(upgradeName);
+
+    if (gameState.gold >= cost) {
+        gameState.gold -= cost;
+        gameState.units[upgradeName]++;
+        calculateGoldPerSecond();
         console.log(`Comprou 1 ${upgradeName}`);
-        calculateGoldPerSecond()
     }
 }
 
+// ================= GOLD / PRODUÇÃO =================
+
 function calculateGoldPerSecond() {
     let total = 0;
-    Object.keys(warriors).forEach(key => {
-        total += gameState[key] * warriors[key].goldPerSecond;
+
+    Object.keys(heroes).forEach(key => {
+        total += gameState.units[key] * heroes[key].goldPerSecond;
     });
+
     gameState.goldPerSecond = total;
 }
 
-// configs do slay button
+// ================= BOTÃO =================
 
-slayButton = document.getElementById("slay-button");
-slayButton.addEventListener("click", getGold);
-
-function getGold() {
+const slayButton = document.getElementById("slay-button");
+slayButton.addEventListener("click", () => {
     gameState.gold += 1;
-}
+}); 
 
+slayButton.addEventListener("click", (e) => {
+    const value = gameState.goldPerClick
+    const span = document.createElement("span");
+    span.className = "floating-text";
+    span.textContent = "+" + value;
 
-// config de visualização de herois
+    span.style.left = `${e.pageX + (Math.random()*30 -10)}px`;
+    span.style.top = `${e.pageY - 15}px`;
+
+    document.body.appendChild(span);
+
+    setTimeout(() => {
+        span.remove();
+    }, 1000);
+});
+
+// ================= UI HEROES =================
 
 function showHeroes() {
-    Object.keys(warriors).forEach(key => {
-        if (!warriors[key].showed) return;
+    Object.keys(heroes).forEach(key => {
+        if (!heroes[key].showed) return;
 
         const heroP = document.getElementById(`${key}-name`);
         const heroSpan = document.getElementById(`${key}-count`);
 
-        // Se ainda NÃO existe, cria
         if (!heroP) {
             const newP = document.createElement("p");
             const newSpan = document.createElement("span");
@@ -102,29 +146,35 @@ function showHeroes() {
             newP.textContent = `${key}: `;
 
             newSpan.id = `${key}-count`;
-            newSpan.textContent = gameState[key];
+            newSpan.textContent = gameState.units[key];
 
             newP.appendChild(newSpan);
             document.getElementById("heroes-list").appendChild(newP);
-        } 
-        // Se já existe, só atualiza o valor
-        else if (heroSpan) {
-            heroSpan.textContent = gameState[key];
+        } else if (heroSpan) {
+            heroSpan.textContent = gameState.units[key];
         }
     });
 }
+// ================= UI DOS EQUIPMENTS=================
 
-// função para dar refresh na ui do jogo
+// function showEquipments() {
+//     Object.keys(equipments).forEach(([key, up])) => {
+        
+//     }
+// }
+
+// ================= LOOP DO JOGO =================
 
 function refreshUI() {
-    showUpgrade()
-    showHeroes()
-    //calculo de gold per sec
-    gameState.gold += gameState.goldPerSecond * 0.1; // 0.1s tick
+    showUpgrade();
+    showHeroes();
+
+    gameState.gold += gameState.goldPerSecond * 0.1;
+
     document.getElementById('gold').innerText = gameState.gold.toFixed(1);
-    document.getElementById('gold-per-second').innerText = gameState.goldPerSecond;   
-    setTimeout(refreshUI, 100); // refresh de 100ms
+    document.getElementById('gold-per-second').innerText = gameState.goldPerSecond;
+
+    setTimeout(refreshUI, 100);
 }
 
 refreshUI();
-

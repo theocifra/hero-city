@@ -23,6 +23,15 @@ button {
     font-size: 20px;
     padding: 10px;
     font-weight: 1;
+    transition: 200ms;
+    box-shadow: 0px 2px;
+}
+
+button:active {
+    background-color: rgb(209, 209, 209) !important;
+    transform: translateY(5px);
+    transition: 500ms;
+    box-shadow:none;
 }
 
 button:hover {
@@ -73,4 +82,24 @@ h2 {
     margin-left: 40px;
     padding-left: 20px;
     border-left: 1px solid gray;
+}
+
+
+.floating-text {
+    position: absolute;
+    color: rgb(50, 50, 50);
+    font-weight: bold;
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-40px);
+        opacity: 0;
+    }
 }
