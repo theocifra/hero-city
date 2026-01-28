@@ -61,28 +61,28 @@ const heroes = {
         goldPerSecond: 3, 
         unlockedAt: 100, 
         showed: false,
-        costMultiplier: 1.30
+        costMultiplier: 1.25
     },
     axeman: { 
         baseCost: 600, 
         goldPerSecond: 10, 
         unlockedAt: 300, 
         showed: false,
-        costMultiplier: 1.40
+        costMultiplier: 1.30
     },
     gladiator: {
         baseCost: 2000, 
         goldPerSecond: 25, 
         unlockedAt: 1000, 
         showed: false,
-        costMultiplier: 1.45
+        costMultiplier: 1.30
     },
     paladin: {
         baseCost: 10000, 
         goldPerSecond: 50, 
         unlockedAt: 5000, 
         showed: false,
-        costMultiplier: 1.45
+        costMultiplier: 1.30
     }
 }
 
