@@ -1,13 +1,50 @@
 // ================= CONSTANTES =================
 
+function saveGame() {
+    const saveData = {
+        gameState: gameState,
+    };
+
+    localStorage.setItem("idleSave", JSON.stringify(saveData));
+}
+
+function loadGame() {
+    const saved = localStorage.getItem("idleSave");
+    if (!saved) return;
+
+    const data = JSON.parse(saved);
+
+    Object.assign(gameState, data.gameState);
+
+    calculateGoldPerSecond();
+}
+
+
+
 const gameState = {
     gold: 0,
     goldPerSecond: 0,
     goldPerClick: 1,
+    totalGoldEarned: 0,
+    totalUnits: 0,
     units: {
         swordsman: 0,
         archer: 0,
-        axeman: 0
+        axeman: 0,
+        gladiator: 0,
+        paladin: 0
+    },
+    equipments: {
+        woodSword: false,
+        martialArts: false
+    },
+    equipmentMultipliers: {
+        swordsman: 1,
+        archer: 1,
+        axeman: 1,
+        gladiator: 1,
+        paladin: 1,
+        click: 1
     }
 }
 
@@ -20,61 +57,96 @@ const heroes = {
         costMultiplier: 1.20
     },
     archer: { 
-        baseCost: 150, 
+        baseCost: 200, 
         goldPerSecond: 3, 
-        unlockedAt: 20, 
-        showed: false,
-        costMultiplier: 1.20
-    },
-    axeman: { 
-        baseCost: 500, 
-        goldPerSecond: 10, 
         unlockedAt: 100, 
         showed: false,
-        costMultiplier: 1.20
+        costMultiplier: 1.30
+    },
+    axeman: { 
+        baseCost: 600, 
+        goldPerSecond: 10, 
+        unlockedAt: 300, 
+        showed: false,
+        costMultiplier: 1.40
+    },
+    gladiator: {
+        baseCost: 2000, 
+        goldPerSecond: 25, 
+        unlockedAt: 1000, 
+        showed: false,
+        costMultiplier: 1.45
+    },
+    paladin: {
+        baseCost: 10000, 
+        goldPerSecond: 50, 
+        unlockedAt: 5000, 
+        showed: false,
+        costMultiplier: 1.45
     }
 }
 
 const equipments = {
+    // swordsman
     woodSword: {
         name: "wood sword",
-        description: "a simple wood ",
+        description: "a simple wood sword",
         effect:"multiply swordsman gains by 2x",
-        price: 60,
+        price: 150,
         affect: "swordsman",
         multiplier: 2,
-        showed: false
     }, 
+    // click
     martialArts: {
-        name: "Martial Arts",
+        name: "martial arts",
         description: "learn the kung fu!",
         effect: "Multiply click efficiency by 2x",
         price: 30,
         affect: "click",
         multiplier: 2,
-        showed: false
+    },
+    // archer
+    ironBow: {
+        name: "iron bow",
+        description: "a better bow",
+        effect: "Multiply the archer efficiency by 2x",
+        price: 500,
+        affect: "archer",
+        multiplier: 2,
+    },
+    // gladiator
+    shield: {
+        name: "shield",
+        description: "a shield for defense",
+        effect: "Multiply the gladiator efficiency by 2x",
+        price: 10000,
+        affect: "gladiator",
+        multiplier: 2,
     }
 }
 
-// ================= UPGRADES =================
+// ================= HEROES =================
 
 function showUpgrade() {
-    Object.entries(heroes).forEach(([key, up]) => {
-        const el = document.querySelector(`.upgrade[data-name="${key}"]`);
-        if (!el) return;
-
-        if (gameState.gold >= up.unlockedAt && !up.showed) {
-            el.style.display = 'inline-block';
-            up.showed = true;
+    Object.keys(heroes).forEach(key => {
+        if (gameState.gold >= heroes[key].unlockedAt && !heroes[key].showed) {
+            const hireButton = document.createElement("button");
+            hireButton.className = "unit-button upgrade";
+            hireButton.id = `${key}-button`
+            hireButton.dataset.name = key;
+            document.getElementById("heroes-section").appendChild(hireButton);
+            heroes[key].showed = true;
+            hireButton.addEventListener("click", () => buyUpgrade(hireButton));
         }
-
-        el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}`;
-        el.setAttribute(
-            "title",
-            `give ${up.goldPerSecond} gold/sec - total: ${up.goldPerSecond * gameState.units[key]} gold/sec`
-        );
-    });
+        const el = document.getElementById(`${key}-button`)
+        if (el) {
+            el.innerHTML = `Hire ${key} - Cost: ${getUpgradeCost(key)}`;
+            el.dataset.tooltip = `give ${heroes[key].goldPerSecond} gold/sec - total: ${heroes[key].goldPerSecond * gameState.units[key]} gold/sec`
+            turnRed(el);
+        }
+    })
 }
+
 
 function getUpgradeCost(upgradeName) {
     const upgrade = heroes[upgradeName];
@@ -91,6 +163,7 @@ function buyUpgrade(element) {
         gameState.units[upgradeName]++;
         calculateGoldPerSecond();
         console.log(`Comprou 1 ${upgradeName}`);
+        gameState.totalUnits++;
     }
 }
 
@@ -100,17 +173,29 @@ function calculateGoldPerSecond() {
     let total = 0;
 
     Object.keys(heroes).forEach(key => {
-        total += gameState.units[key] * heroes[key].goldPerSecond;
+        const baseProduction = gameState.units[key] * heroes[key].goldPerSecond;
+        const multiplier = gameState.equipmentMultipliers[key];
+        total += baseProduction * multiplier;
     });
 
     gameState.goldPerSecond = total;
 }
+function stats() {
+    const totalGoldElement = document.getElementById("total-gold-earned");
+    totalGoldElement.textContent = gameState.totalGoldEarned.toFixed(1);
+    const totalUnitsElement = document.getElementById("total-units");
+    totalUnitsElement.textContent = gameState.totalUnits;
+    const golPerCllickElement = document.getElementById("gold-per-click");
+    golPerCllickElement.textContent = gameState.goldPerClick;
+}
+
 
 // ================= BOTÃO =================
 
 const slayButton = document.getElementById("slay-button");
 slayButton.addEventListener("click", () => {
-    gameState.gold += 1;
+    gameState.gold += gameState.goldPerClick;
+    gameState.totalGoldEarned += gameState.goldPerClick;
 }); 
 
 slayButton.addEventListener("click", (e) => {
@@ -157,24 +242,102 @@ function showHeroes() {
 }
 // ================= UI DOS EQUIPMENTS=================
 
-// function showEquipments() {
-//     Object.keys(equipments).forEach(([key, up])) => {
+function buyEquipment(element) {
+    const equipmentName = element.dataset.name;
+    const price = equipments[equipmentName].price;
+    if (gameState.gold < price) return;
+    gameState.gold -= price;
+    gameState.equipments[equipmentName] = true;
+    gameState[equipmentName] = true;
+    element.remove();
+    console.log(`Comprou ${equipmentName}`);
+    calculateGoldPerSecond()
+    if (equipments[equipmentName].affect === "click") {
+        gameState.goldPerClick = gameState.goldPerClick * equipments[equipmentName].multiplier
+    }
+    else {
+        const heroAffected = heroes[equipments[equipmentName].affect]
+        heroAffected.goldPerSecond = heroAffected.goldPerSecond * equipments[equipmentName].multiplier
+    }
+}
+
+
+
+function showEquipments() {
+    Object.keys(equipments).forEach((key) => {
+        const up = equipments[key];
+        let upgradeButton = document.getElementById(`${key}-upgrade-button`);
         
-//     }
-// }
+        // Se o equipamento já foi comprado, remover botão
+        if (gameState.equipments[key]) {
+            if (upgradeButton) upgradeButton.remove();
+            return;
+        }
+        
+        // Criar botão apenas uma vez
+        if (!upgradeButton && gameState.gold >= up.price / 2) {
+            upgradeButton = document.createElement("button");
+            upgradeButton.id = `${key}-upgrade-button`;
+            upgradeButton.className = "upgrade equipment-button";
+            upgradeButton.textContent = up.name;
+            upgradeButton.dataset.name = `${key}`;
+            upgradeButton.dataset.tooltip = `${up.description} \n Effect: ${up.effect} \nPrice: ${up.price} gold`;
+            document.getElementById("equipments-section").appendChild(upgradeButton);
+            upgradeButton.addEventListener("click", () => buyEquipment(upgradeButton));
+        }
+        
+        // Atualizar cor baseado no gold atual
+        if (upgradeButton) {
+            turnRed(upgradeButton);
+        }   
+    });
+}
+    
+function turnRed(element) {
+    if (!element) return;
+    
+    if (element.classList.contains("equipment-button")) {
+        const equipmentName = element.dataset.name;
+        const price = equipments[equipmentName].price;
+        if (gameState.gold < price) {
+            element.style.setProperty("background-color", "var(--light-red)", "important");
+        }
+        else {
+            element.style.setProperty("background-color", "lightgreen", "important");
+        }
+    }
+    else if (element.classList.contains("unit-button")) {
+        const upgradeName = element.dataset.name;
+        const cost = getUpgradeCost(upgradeName);
+        if (gameState.gold < cost) {
+            element.style.setProperty("background-color", "var(--light-red)", "important");
+        }
+        else {
+            element.style.setProperty("background-color", "lightgreen", "important");
+        }
+    }
+}
+
+
+function getGold (amount) {
+    gameState.gold += amount;
+}
 
 // ================= LOOP DO JOGO =================
 
 function refreshUI() {
     showUpgrade();
     showHeroes();
-
+    showEquipments();
+    stats();
     gameState.gold += gameState.goldPerSecond * 0.1;
-
+    gameState.totalGoldEarned += gameState.goldPerSecond * 0.1;
     document.getElementById('gold').innerText = gameState.gold.toFixed(1);
     document.getElementById('gold-per-second').innerText = gameState.goldPerSecond;
 
     setTimeout(refreshUI, 100);
 }
-
+loadGame();
 refreshUI();
+setInterval(saveGame, 5000); // salva a cada 5s
+window.addEventListener("beforeunload", saveGame);

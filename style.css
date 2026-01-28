@@ -1,12 +1,19 @@
-body {
+:root {
+    --light-red: #ff6464;
+}
+
+html {
     margin: 0;
+    padding: 0;
+}
+
+body {
+    margin-top: 20px;
+    padding: 0;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     font-size: 22px;
     display: flex;  
     justify-content: space-between;
-    margin: 15px;
-    margin-right: 50px;
-
 }
 
 p { 
@@ -18,7 +25,7 @@ button {
     display: block;
     margin: 8px;
     border-radius: 4px;
-    width: 100%;
+    width: 80%;
     height: fit-content;
     font-size: 20px;
     padding: 10px;
@@ -36,52 +43,56 @@ button:active {
 
 button:hover {
     cursor: pointer;
-    background-color: rgb(229, 228, 228);
+    background-color: rgb(214, 212, 212);
 }
 
-button[title]:hover::after {
-    content: attr(title);
-    position: absolute;
-    background-color: rgb(218, 218, 218);
-    color: rgb(0, 0, 0);
-    padding: 5px;
-    border-radius: 5px;
-    border: grey solid 2px;
-    margin-left: 17px;
-    margin-top: 27px;
-}
-
-.upgrade {
-    display:none;
+.unit-button {
 }
 
 #heroes-list {
     display: flex;
     flex-direction: column ;
+    text-align: left;
 }
 
 
 h2 {
-    margin-top: 0px;
+    margin: 0px;
 }
 
+#left-left {
+    padding: 10px;
+    width: 25vh;
+}
 
 #left {
     display: flex;
     justify-content: space-between;
+    text-align: center;
 }
 
-#stats {
+#gold-stats {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 #buttons-section {
     display: flex;
     flex-direction: column;
-    margin-left: 40px;
-    padding-left: 20px;
+    align-items: center;
     border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    width: 400px;
+    height: 100vh;
+}
+
+#equipments-section {
+    padding: 20px;
+    width: 200px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -102,4 +113,63 @@ h2 {
         transform: translateY(-40px);
         opacity: 0;
     }
+}
+
+#stats {
+    margin-top:500px;
+    font-size: 17px;
+    display: flex;  
+    flex-direction: column;
+    text-align: left;
+}
+
+#right {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+#top-left-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upgrade::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 4px);
+    left: -3px;
+
+    background: #dbdada;
+    border: 1px solid grey;
+    color: #000000;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 16px;
+
+    white-space: pre-line;
+    width: max-content;
+    max-width: 220px;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 999;
+}
+.upgrade {
+    width: 90%;
+    position: relative;
+}
+
+.upgrade:hover::after {
+    opacity: 1;
+}
+
+#heroes-section {
+    width: 35vh;
+    height: 100vh;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    padding : 20px;
 }

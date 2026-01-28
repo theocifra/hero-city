@@ -11,16 +11,20 @@
 <body>
     <section id="left">
         <div id="left-left">
-            <div id="stats">
-                <p>Gold:<p id="gold">0</p></p>
-                <p>GPS:<p id="gold-per-second">0</p></p>
+            <div id="top-left-left">
+                <div id="gold-stats">
+                    <p>Gold:<p id="gold">0</p></p>
+                    <p>GPS:<p id="gold-per-second">0</p></p>
+                </div>
+                <button id="slay-button">slay monsters</button>
             </div>
-            <button id="slay-button">slay monsters</button>
+            <div id="stats"> 
+                <p>Gold earned so far: <span id="total-gold-earned">0</span></p>
+                <p>Total units: <span id="total-units">0</span></p>
+                <p>Gold per click: <span id="gold-per-click">1</span></p>
+            </div>
         </div>
-        <section id="buttons-section">
-            <button id="button-hire-swordsman" class="upgrade" data-name="swordsman" onclick=buyUpgrade(this)></button>
-            <button id="button-hire-archer" class="upgrade" data-name="archer" onclick=buyUpgrade(this)></button>
-            <button id="button-hire-axeman" class="upgrade" data-name="axeman" onclick=buyUpgrade(this)></button>
+        <section id="heroes-section">
         </section>
         <section id="equipments-section">
             <!-- equipments will be displayed here -->
