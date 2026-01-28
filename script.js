@@ -36,7 +36,9 @@ const gameState = {
     },
     equipments: {
         woodSword: false,
-        martialArts: false
+        martialArts: false,
+        ironBow: false,
+        shield: false
     },
     equipmentMultipliers: {
         swordsman: 1,
@@ -230,14 +232,16 @@ function showHeroes() {
             newP.id = `${key}-name`;
             newP.textContent = `${key}: `;
 
-            newSpan.id = `${key}-count`;
-            newSpan.textContent = gameState.units[key];
-
-            newP.appendChild(newSpan);
-            document.getElementById("heroes-list").appendChild(newP);
-        } else if (heroSpan) {
-            heroSpan.textContent = gameState.units[key];
-        }
+    
+    if (equipments[equipmentName].affect === "click") {
+        gameState.goldPerClick = gameState.goldPerClick * equipments[equipmentName].multiplier
+    }
+    else {
+        const affectedHero = equipments[equipmentName].affect;
+        gameState.equipmentMultipliers[affectedHero] *= equipments[equipmentName].multiplier;
+    }
+    
+    calculateGoldPerSecond()   }
     });
 }
 // ================= UI DOS EQUIPMENTS=================
@@ -339,5 +343,5 @@ function refreshUI() {
 }
 loadGame();
 refreshUI();
-setInterval(saveGame, 5000); // salva a cada 5s
+setInterval(saveGame, 10000); // salva a cada 5s
 window.addEventListener("beforeunload", saveGame);
