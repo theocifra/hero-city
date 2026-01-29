@@ -232,16 +232,14 @@ function showHeroes() {
             newP.id = `${key}-name`;
             newP.textContent = `${key}: `;
 
-    
-    if (equipments[equipmentName].affect === "click") {
-        gameState.goldPerClick = gameState.goldPerClick * equipments[equipmentName].multiplier
-    }
-    else {
-        const affectedHero = equipments[equipmentName].affect;
-        gameState.equipmentMultipliers[affectedHero] *= equipments[equipmentName].multiplier;
-    }
-    
-    calculateGoldPerSecond()   }
+            newSpan.id = `${key}-count`;
+            newSpan.textContent = gameState.units[key];
+
+            newP.appendChild(newSpan);
+            document.getElementById("heroes-list").appendChild(newP);
+        } else if (heroSpan) {
+            heroSpan.textContent = gameState.units[key];
+        }
     });
 }
 // ================= UI DOS EQUIPMENTS=================
@@ -255,14 +253,16 @@ function buyEquipment(element) {
     gameState[equipmentName] = true;
     element.remove();
     console.log(`Comprou ${equipmentName}`);
-    calculateGoldPerSecond()
+    
     if (equipments[equipmentName].affect === "click") {
         gameState.goldPerClick = gameState.goldPerClick * equipments[equipmentName].multiplier
     }
     else {
-        const heroAffected = heroes[equipments[equipmentName].affect]
-        heroAffected.goldPerSecond = heroAffected.goldPerSecond * equipments[equipmentName].multiplier
+        const affectedHero = equipments[equipmentName].affect;
+        gameState.equipmentMultipliers[affectedHero] *= equipments[equipmentName].multiplier;
     }
+    
+    calculateGoldPerSecond()
 }
 
 
